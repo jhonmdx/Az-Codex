@@ -1,0 +1,8 @@
+## Interface: 120000
+## Title: Raid Intel
+## Notes: Exibe dados locais de guias e fontes de World of Warcraft.
+## Author: Raid Intel
+## Version: 0.1.0
+## SavedVariables: RaidIntelDB
+Data.lua
+Core.lua

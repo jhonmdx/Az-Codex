@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Raid Intel — prévia visual</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #111315;
+            color: #eee7d8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background:
+                radial-gradient(ellipse at 50% 42%, rgba(96, 72, 43, .24), transparent 55%),
+                linear-gradient(145deg, #191b1c, #101214 58%, #171512);
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        .stage {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 34px 18px;
+        }
+
+        .preview {
+            width: min(100%, 670px);
+        }
+
+        .preview-note {
+            margin: 0 0 14px;
+            color: #b9aa8b;
+            font-size: 12px;
+            letter-spacing: .13em;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .game-window {
+            position: relative;
+            overflow: hidden;
+            padding: 24px;
+            border: 1px solid #a68a55;
+            border-radius: 8px;
+            background:
+                linear-gradient(135deg, rgba(64, 51, 34, .96), rgba(30, 27, 23, .98) 24%, rgba(24, 25, 26, .98) 70%, rgba(48, 39, 27, .98));
+            box-shadow:
+                0 0 0 3px #171512,
+                0 0 0 4px #58472d,
+                0 24px 80px rgba(0, 0, 0, .72),
+                inset 0 0 34px rgba(0, 0, 0, .44);
+        }
+
+        .game-window::before {
+            position: absolute;
+            inset: 6px;
+            border: 1px solid rgba(198, 163, 101, .25);
+            border-radius: 4px;
+            content: "";
+            pointer-events: none;
+        }
+
+        .window-header,
+        .spec-row,
+        .section-heading,
+        .item-row,
+        .footer-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .window-header {
+            position: relative;
+            padding: 1px 2px 17px;
+            border-bottom: 1px solid rgba(193, 157, 94, .34);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            display: grid;
+            width: 40px;
+            height: 40px;
+            place-items: center;
+            border: 1px solid #9e7d43;
+            border-radius: 50%;
+            background: radial-gradient(circle, #4b3720, #1a1815 72%);
+            color: #e7bf70;
+            font-size: 20px;
+            box-shadow: 0 0 18px rgba(216, 166, 76, .15);
+        }
+
+        h1 {
+            margin: 0;
+            color: #f0d294;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: .035em;
+            text-shadow: 0 2px 8px #000;
+        }
+
+        .subtitle {
+            margin: 4px 0 0;
+            color: #a99b81;
+            font-size: 11px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .close-button {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #755d3a;
+            border-radius: 4px;
+            background: linear-gradient(#4a362b, #271e1a);
+            color: #ead7b0;
+            cursor: pointer;
+            font-size: 19px;
+            line-height: 1;
+        }
+
+        .header-actions,
+        .language-switch {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .language-button {
+            min-width: 42px;
+            height: 27px;
+            padding: 0 6px;
+            border: 1px solid #655338;
+            border-radius: 3px;
+            background: #28231d;
+            color: #c4b99f;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        .language-button[aria-pressed="true"] {
+            border-color: #c7a25e;
+            background: #493820;
+            color: #ffdf9b;
+        }
+
+        .close-button:hover,
+        .source-button:hover {
+            border-color: #d6b56e;
+            filter: brightness(1.2);
+        }
+
+        .spec-row {
+            gap: 12px;
+            padding: 17px 2px 14px;
+        }
+
+        .spec-name {
+            color: #eee4d1;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .spec-meta {
+            margin-top: 4px;
+            color: #9d927d;
+            font-size: 12px;
+        }
+
+        .demo-badge {
+            flex: 0 0 auto;
+            padding: 6px 9px;
+            border: 1px solid rgba(221, 174, 80, .48);
+            border-radius: 3px;
+            background: rgba(111, 75, 25, .2);
+            color: #e9bf70;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .08em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            padding-bottom: 14px;
+        }
+
+        .tab {
+            min-width: 126px;
+            padding: 9px 15px;
+            border: 1px solid #564832;
+            border-radius: 4px;
+            background: linear-gradient(#302b24, #201e1b);
+            color: #c4b99f;
+            cursor: pointer;
+            font-size: 13px;
+            transition: border-color .15s, background .15s, color .15s;
+        }
+
+        .tab:hover {
+            border-color: #9d804d;
+            color: #f0dfbd;
+        }
+
+        .tab[aria-selected="true"] {
+            border-color: #c7a25e;
+            background: linear-gradient(#69502d, #3d3020);
+            color: #ffdf9b;
+            box-shadow: inset 0 0 12px rgba(232, 181, 83, .13), 0 0 12px rgba(205, 154, 62, .1);
+        }
+
+        .content-panel {
+            min-height: 276px;
+            max-height: min(42vh, 380px);
+            overflow: auto;
+            padding: 4px 9px 16px 2px;
+            scrollbar-color: #705a37 #211f1b;
+            scrollbar-width: thin;
+        }
+
+        .intro {
+            margin: 0 0 17px;
+            color: #b4aa99;
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        .section {
+            margin: 0 0 18px;
+        }
+
+        .section-heading {
+            gap: 10px;
+            margin-bottom: 8px;
+            color: #e4c276;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+
+        .section-heading::after {
+            height: 1px;
+            flex: 1;
+            background: linear-gradient(90deg, rgba(174, 135, 67, .5), transparent);
+            content: "";
+        }
+
+        .item-list {
+            display: grid;
+            gap: 5px;
+        }
+
+        .item-row {
+            min-height: 34px;
+            justify-content: flex-start;
+            gap: 10px;
+            padding: 6px 9px;
+            border: 1px solid rgba(135, 112, 74, .2);
+            border-radius: 3px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .012));
+            font-size: 12px;
+        }
+
+        .item-icon {
+            display: grid;
+            width: 22px;
+            height: 22px;
+            flex: 0 0 auto;
+            place-items: center;
+            border: 1px solid #7c6748;
+            border-radius: 4px;
+            background: #30271d;
+            color: #d7ad62;
+            font-size: 11px;
+        }
+
+        .item-slot {
+            width: 67px;
+            flex: 0 0 auto;
+            color: #a79b84;
+        }
+
+        .item-name {
+            color: #d6cbb6;
+        }
+
+        .item-name.demo {
+            color: #c39c5d;
+            font-style: italic;
+        }
+
+        .stat-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .stat-list li {
+            padding: 6px 9px;
+            border: 1px solid rgba(171, 136, 76, .28);
+            border-radius: 3px;
+            background: rgba(173, 132, 61, .08);
+            color: #d4c8b2;
+            font-size: 11px;
+        }
+
+        .panel-footer {
+            padding-top: 14px;
+            border-top: 1px solid rgba(193, 157, 94, .3);
+        }
+
+        .footer-top {
+            justify-content: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #a99e8a;
+            font-size: 11px;
+        }
+
+        .patch-pill {
+            margin-left: auto;
+            color: #c4a66f;
+        }
+
+        .sources {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 7px;
+            margin-bottom: 9px;
+        }
+
+        .source-button {
+            min-height: 30px;
+            overflow: hidden;
+            padding: 5px 8px;
+            border: 1px solid #5b4a31;
+            border-radius: 3px;
+            background: linear-gradient(#3c3328, #28231d);
+            color: #d7c5a2;
+            cursor: pointer;
+            font-size: 11px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .url-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 8px;
+            border: 1px solid #453a29;
+            border-radius: 3px;
+            background: rgba(0, 0, 0, .28);
+        }
+
+        .url-box label {
+            flex: 0 0 auto;
+            color: #978b76;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .url-box input {
+            width: 100%;
+            min-width: 0;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: #cfbd99;
+            font-size: 11px;
+        }
+
+        .reopen {
+            display: none;
+            padding: 11px 18px;
+            border: 1px solid #9b7c49;
+            border-radius: 4px;
+            background: #30271d;
+            color: #f0d294;
+            cursor: pointer;
+        }
+
+        .game-window.is-hidden {
+            display: none;
+        }
+
+        .is-hidden + .reopen {
+            display: inline-block;
+        }
+
+        @media (max-width: 540px) {
+            .game-window {
+                padding: 18px 14px;
+            }
+
+            .spec-row {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .tabs {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .tab {
+                min-width: 0;
+                padding-inline: 8px;
+            }
+
+            .content-panel {
+                max-height: 42vh;
+            }
+
+        }
+    </style>
+</head>
+<body>
+    <main class="stage">
+        <div class="preview">
+            <p class="preview-note" id="preview-note" data-i18n="previewNote">Prévia de interface — dados fictícios para demonstração</p>
+            <section class="game-window" id="game-window" aria-label="Prévia do addon Raid Intel" data-i18n-aria="windowLabel">
+                <header class="window-header">
+                    <div class="brand">
+                        <div class="brand-icon" aria-hidden="true">✦</div>
+                        <div>
+                            <h1>Raid Intel</h1>
+                            <p class="subtitle" data-i18n="subtitle">Guia de classe</p>
+                        </div>
+                    </div>
+                    <div class="header-actions">
+                        <div class="language-switch" role="group" aria-label="Idioma" data-i18n-aria="languageLabel">
+                            <button class="language-button" id="language-pt" type="button" aria-pressed="true">PT-BR</button>
+                            <button class="language-button" id="language-en" type="button" aria-pressed="false">EN</button>
+                        </div>
+                        <button class="close-button" id="close-button" type="button" aria-label="Fechar janela" data-i18n-aria="closeLabel">×</button>
+                    </div>
+                </header>
+
+                <div class="spec-row">
+                    <div>
+                        <div class="spec-name" data-i18n="specName">Mago — Arcano</div>
+                        <div class="spec-meta" data-i18n="specMeta">Dados locais · especialização detectada</div>
+                    </div>
+                    <span class="demo-badge" data-i18n="demoBadge">DEMONSTRAÇÃO</span>
+                </div>
+
+                <nav class="tabs" aria-label="Tipo de conteúdo" data-i18n-aria="contentLabel">
+                    <button class="tab" type="button" data-profile="raid" aria-selected="true" data-i18n="raidTab">⚔ &nbsp;Raide</button>
+                    <button class="tab" type="button" data-profile="mythicPlus" aria-selected="false" data-i18n="mythicTab">◆ &nbsp;Mítico+</button>
+                </nav>
+
+                <div class="content-panel" id="content-panel" aria-live="polite"></div>
+
+                <footer class="panel-footer">
+                    <div class="footer-top">
+                        <span data-i18n="sourcesLabel">Fontes para consulta</span>
+                        <span class="patch-pill" data-i18n="demoNote">Layout ilustrativo · sem dados reais</span>
+                    </div>
+                    <div class="sources" id="sources"></div>
+                    <div class="url-box">
+                        <label for="source-url" data-i18n="urlLabel">Endereço</label>
+                        <input id="source-url" type="text" readonly value="Clique em uma fonte acima">
+                    </div>
+                </footer>
+            </section>
+            <button class="reopen" id="reopen-button" type="button" data-i18n="reopenButton">Abrir prévia Raid Intel</button>
+        </div>
+    </main>
+
+    <script>
+        const translations = {
+            "pt-BR": {
+                title: "Raid Intel — prévia visual",
+                previewNote: "Prévia de interface — dados fictícios para demonstração",
+                windowLabel: "Prévia do addon Raid Intel",
+                subtitle: "Guia de classe",
+                languageLabel: "Idioma",
+                closeLabel: "Fechar janela",
+                specName: "Mago — Arcano",
+                specMeta: "Dados locais · especialização detectada",
+                demoBadge: "DEMONSTRAÇÃO",
+                contentLabel: "Tipo de conteúdo",
+                raidTab: "⚔ &nbsp;Raide",
+                mythicTab: "◆ &nbsp;Mítico+",
+                sourcesLabel: "Fontes para consulta",
+                demoNote: "Layout ilustrativo · sem dados reais",
+                urlLabel: "Endereço",
+                urlPlaceholder: "Clique em uma fonte acima",
+                reopenButton: "Abrir prévia Raid Intel",
+                raidIntro: "Exemplo visual de como o guia da especialização selecionada pode ser organizado. Os itens e recomendações abaixo são marcadores fictícios.",
+                mythicIntro: "Perfil separado para Mítico+. Use esta aba para visualizar como recomendações específicas de masmorra podem aparecer.",
+                bis: "Equipamento BIS",
+                stats: "Prioridade de atributos",
+                enchants: "Encantamentos",
+                demoItem: "Item de demonstração",
+                demoEnchant: "Encantamento demonstrativo",
+                demoStat: "Atributo demonstrativo",
+                head: "Cabeça",
+                neck: "Pescoço",
+                shoulders: "Ombros",
+                chest: "Peitoral",
+                weapon: "Mão principal",
+                ring: "Anel",
+                cloak: "Capa",
+                boots: "Botas",
+            },
+            "en-US": {
+                title: "Raid Intel — visual preview",
+                previewNote: "Interface preview — fictional data for demonstration",
+                windowLabel: "Raid Intel addon preview",
+                subtitle: "Class guide",
+                languageLabel: "Language",
+                closeLabel: "Close window",
+                specName: "Mage — Arcane",
+                specMeta: "Local data · specialization detected",
+                demoBadge: "DEMO",
+                contentLabel: "Content type",
+                raidTab: "⚔ &nbsp;Raid",
+                mythicTab: "◆ &nbsp;Mythic+",
+                sourcesLabel: "Reference sources",
+                demoNote: "Illustrative layout · no real data",
+                urlLabel: "Address",
+                urlPlaceholder: "Click a source above",
+                reopenButton: "Open Raid Intel preview",
+                raidIntro: "Visual example of how a guide for the selected specialization could be organized. The items and recommendations below are fictional placeholders.",
+                mythicIntro: "A separate Mythic+ profile. Use this tab to preview how dungeon-specific recommendations could appear.",
+                bis: "Best-in-slot gear",
+                stats: "Stat priority",
+                enchants: "Enchantments",
+                demoItem: "Demo item",
+                demoEnchant: "Demo enchantment",
+                demoStat: "Demo stat",
+                head: "Head",
+                neck: "Neck",
+                shoulders: "Shoulders",
+                chest: "Chest",
+                weapon: "Main hand",
+                ring: "Ring",
+                cloak: "Cloak",
+                boots: "Boots",
+            },
+        };
+
+        const profiles = {
+            raid: {
+                intro: "raidIntro",
+                items: ["head", "neck", "shoulders", "chest", "weapon"],
+                statCount: 3,
+                enchants: [
+                    "weapon", "ring", "cloak",
+                ],
+            },
+            mythicPlus: {
+                intro: "mythicIntro",
+                items: ["head", "shoulders", "weapon", "ring"],
+                statCount: 3,
+                enchants: [
+                    "weapon", "ring", "boots",
+                ],
+            },
+        };
+
+        const sources = [
+            ["Wowhead", "https://www.wowhead.com/guides"],
+            ["Icy Veins", "https://www.icy-veins.com/wow/"],
+            ["Archon", "https://www.archon.gg/"],
+            ["Murlok.io", "https://murlok.io/"],
+        ];
+
+        const contentPanel = document.getElementById("content-panel");
+        const sourceUrl = document.getElementById("source-url");
+        let currentLanguage = "pt-BR";
+        let currentProfile = "raid";
+
+        function renderProfile() {
+            const strings = translations[currentLanguage];
+            const profile = profiles[currentProfile];
+            const itemRows = profile.items.map((slot) => `
+                <div class="item-row">
+                    <span class="item-icon" aria-hidden="true">✦</span>
+                    <span class="item-slot">${strings[slot]}</span>
+                    <span class="item-name demo">${strings.demoItem}</span>
+                </div>
+            `).join("");
+            const enchantRows = profile.enchants.map((slot) => `
+                <div class="item-row">
+                    <span class="item-icon" aria-hidden="true">⌑</span>
+                    <span class="item-slot">${strings[slot]}</span>
+                    <span class="item-name demo">${strings.demoEnchant}</span>
+                </div>
+            `).join("");
+            const stats = Array.from({ length: profile.statCount }, (_, index) =>
+                `<li>${index + 1}. ${strings.demoStat} ${index + 1}</li>`
+            ).join("");
+
+            contentPanel.innerHTML = `
+                <p class="intro">${strings[profile.intro]}</p>
+                <section class="section">
+                    <h2 class="section-heading">${strings.bis}</h2>
+                    <div class="item-list">${itemRows}</div>
+                </section>
+                <section class="section">
+                    <h2 class="section-heading">${strings.stats}</h2>
+                    <ol class="stat-list">${stats}</ol>
+                </section>
+                <section class="section">
+                    <h2 class="section-heading">${strings.enchants}</h2>
+                    <div class="item-list">${enchantRows}</div>
+                </section>
+            `;
+        }
+
+        function applyLanguage(language) {
+            currentLanguage = language;
+            document.documentElement.lang = language;
+            document.title = translations[language].title;
+            document.querySelectorAll("[data-i18n]").forEach((element) => {
+                element.innerHTML = translations[language][element.dataset.i18n];
+            });
+            document.querySelectorAll("[data-i18n-aria]").forEach((element) => {
+                element.setAttribute("aria-label", translations[language][element.dataset.i18nAria]);
+            });
+            document.getElementById("language-pt").setAttribute("aria-pressed", String(language === "pt-BR"));
+            document.getElementById("language-en").setAttribute("aria-pressed", String(language === "en-US"));
+            sourceUrl.value = translations[language].urlPlaceholder;
+            renderProfile();
+        }
+
+        document.getElementById("language-pt").addEventListener("click", () => applyLanguage("pt-BR"));
+        document.getElementById("language-en").addEventListener("click", () => applyLanguage("en-US"));
+
+        document.querySelectorAll(".tab").forEach((tab) => {
+            tab.addEventListener("click", () => {
+                document.querySelectorAll(".tab").forEach((button) => {
+                    button.setAttribute("aria-selected", String(button === tab));
+                });
+                currentProfile = tab.dataset.profile;
+                renderProfile();
+            });
+        });
+
+        sources.forEach(([name, url]) => {
+            const button = document.createElement("button");
+            button.className = "source-button";
+            button.type = "button";
+            button.textContent = name;
+            button.addEventListener("click", () => {
+                sourceUrl.value = url;
+                sourceUrl.select();
+            });
+            document.getElementById("sources").append(button);
+        });
+
+        document.getElementById("close-button").addEventListener("click", () => {
+            document.getElementById("game-window").classList.add("is-hidden");
+        });
+        document.getElementById("reopen-button").addEventListener("click", () => {
+            document.getElementById("game-window").classList.remove("is-hidden");
+        });
+
+        applyLanguage("pt-BR");
+    </script>
+</body>
+</html>
