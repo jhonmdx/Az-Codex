@@ -1,8 +1,0 @@
-## Interface: 120000
-## Title: Az Codex
-## Notes: Exibe dados locais de guias e fontes de World of Warcraft.
-## Author: Az Codex
-## Version: 0.1.0
-## SavedVariables: RaidIntelDB
-Data.lua
-Core.lua
