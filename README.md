@@ -11,26 +11,6 @@ precisam ser preparados e distribuidos nos arquivos Lua do addon. Nao inclua
 tokens ou credenciais de APIs no addon. Antes de reutilizar dados, verifique os
 termos de uso e as APIs oficiais de cada fonte.
 
-## Instalacao
-
-1. Copie a pasta do addon para `World of Warcraft/_retail_/Interface/AddOns/RaidIntel`.
-2. No seletor de personagens, habilite **Raid Intel**.
-3. No jogo, use `/raidintel` para abrir ou fechar a janela.
-
-O numero `Interface` no arquivo TOC deve corresponder a versao do cliente do
-WoW. Se o addon aparecer como desatualizado, atualize esse numero para o valor
-da versao instalada ou habilite addons desatualizados temporariamente.
-Use os botoes **PT-BR** e **EN** no addon para trocar o idioma; a preferencia e
-salva para a proxima sessao.
-
-## Prévia visual no navegador
-
-Abra `preview.html` em um navegador para visualizar o layout sem instalar o
-addon. Os botoes de idioma alternam entre portugues do Brasil e ingles; os
-botoes de **Raide** e **Mitico+** alternam entre exemplos visuais. Itens,
-atributos e encantamentos nessa pagina sao ficticios e nao devem ser usados
-como recomendacoes de jogo. As fontes aparecem em duas colunas, duas por linha.
-
 ## Adicionar dados
 
 Edite `Data.lua`. Os registros sao indexados pelo arquivo da classe e pelo ID
@@ -100,10 +80,3 @@ as chaves `ptBR` e `enUS`. Exemplo de item:
 Preencha o patch, a temporada, a data de revisao e os itens, atributos,
 encantamentos e recomendacoes de cada modo. Use somente dados conferidos no
 guia e mantenha o link da fonte.
-
-## Proxima etapa para automatizar
-
-Para automatizar atualizacoes, implemente um coletor fora do jogo que use
-somente APIs e metodos autorizados pelas fontes. Esse coletor pode normalizar
-os dados e gerar o arquivo `Data.lua`; o addon continua apenas carregando e
-exibindo os dados locais.
