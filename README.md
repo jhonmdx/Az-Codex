@@ -6,6 +6,8 @@
 O personagem logado determina automaticamente a classe e a especializacao; nao
 e necessario seleciona-las no addon.
 
+Use `/azcodex` para abrir ou fechar a janela.
+
 ## Estrutura universal dos dados
 
 Os dados seguem a hierarquia:

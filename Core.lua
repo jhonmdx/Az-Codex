@@ -1,5 +1,5 @@
 local addonName = ...
-local data = RaidIntelData
+local data = AzCodexData
 local mainFrame
 local bodyText
 local specText
@@ -41,7 +41,7 @@ local text = {
         mythicPlus = "Mitico+",
         selected = " (selecionado)",
         sourceLabel = "Fontes (clique para copiar o endereco):",
-        loaded = "carregado. Use /raidintel para abrir.",
+        loaded = "carregado. Use /azcodex para abrir.",
     },
     enUS = {
         package = "Local pack v%s - updated %s.",
@@ -70,7 +70,7 @@ local text = {
         mythicPlus = "Mythic+",
         selected = " (selected)",
         sourceLabel = "Sources (click to copy the address):",
-        loaded = "loaded. Type /raidintel to open.",
+        loaded = "loaded. Type /azcodex to open.",
     },
 }
 
@@ -343,7 +343,7 @@ end
 
 local function setLanguage(locale)
     language = locale
-    RaidIntelDB.language = locale
+    AzCodexDB.language = locale
     sourceLabel:SetText(t("sourceLabel"))
     updateContentButtons()
     updateLanguageButtons()
@@ -383,7 +383,7 @@ local function createSourceButtons()
 end
 
 local function createMainFrame()
-    mainFrame = CreateFrame("Frame", "RaidIntelMainFrame", UIParent, "BackdropTemplate")
+    mainFrame = CreateFrame("Frame", "AzCodexMainFrame", UIParent, "BackdropTemplate")
     mainFrame:SetSize(520, 500)
     mainFrame:SetPoint("CENTER")
     mainFrame:SetBackdrop({
@@ -450,7 +450,7 @@ local function createMainFrame()
 
     createContentButtons()
     createSourceButtons()
-    table.insert(UISpecialFrames, "RaidIntelMainFrame")
+    table.insert(UISpecialFrames, "AzCodexMainFrame")
 end
 
 local function toggleMainFrame()
@@ -462,8 +462,8 @@ local function toggleMainFrame()
     end
 end
 
-SLASH_RAIDINTEL1 = "/raidintel"
-SlashCmdList.RAIDINTEL = function()
+SLASH_AZCODEX1 = "/azcodex"
+SlashCmdList.AZCODEX = function()
     toggleMainFrame()
 end
 
@@ -472,13 +472,13 @@ eventFrame:RegisterEvent("PLAYER_LOGIN")
 eventFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 eventFrame:SetScript("OnEvent", function(_, event, unit)
     if event == "PLAYER_LOGIN" then
-        if type(RaidIntelDB) ~= "table" then
-            RaidIntelDB = {}
+        if type(AzCodexDB) ~= "table" then
+            AzCodexDB = {}
         end
-        if RaidIntelDB.language == "ptBR" or RaidIntelDB.language == "enUS" then
-            language = RaidIntelDB.language
+        if AzCodexDB.language == "ptBR" or AzCodexDB.language == "enUS" then
+            language = AzCodexDB.language
         else
-            RaidIntelDB.language = language
+            AzCodexDB.language = language
         end
         createMainFrame()
         print(addonName .. " " .. t("loaded"))
