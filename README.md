@@ -27,84 +27,9 @@ correspondentes. IDs usados em dados importados devem ser conferidos com as
 APIs do cliente; nomes e IDs de exemplo nao sao afirmacoes sobre o catalogo
 atual do jogo.
 
-Exemplo da forma de uma entrada:
-
-```json
-{
-  "schemaVersion": 2,
-  "gameVersion": {
-    "patch": "versao consultada",
-    "season": 1
-  },
-  "classes": {
-    "CLASS_TOKEN": {
-      "classId": 0,
-      "specializations": {
-        "SPEC_ID": {
-          "specId": 0,
-          "role": "DAMAGER",
-          "name": {
-            "ptBR": "Nome da especializacao",
-            "enUS": "Specialization name"
-          },
-          "contents": {
-            "raid": {
-              "defaultBuildId": "build-id",
-              "builds": {
-                "build-id": {
-                  "name": {
-                    "ptBR": "Nome da build",
-                    "enUS": "Build name"
-                  },
-                  "overview": {
-                    "ptBR": "Resumo",
-                    "enUS": "Overview"
-                  },
-                  "popularity": {
-                    "summary": {
-                      "ptBR": "Contexto e amostra da fonte",
-                      "enUS": "Source context and sample"
-                    },
-                    "sampleSize": 0,
-                    "source": "Nome da fonte"
-                  },
-                  "talents": {
-                    "importString": {
-                      "ptBR": "Codigo de talentos",
-                      "enUS": "Talent import string"
-                    }
-                  },
-                  "stats": [],
-                  "gems": [],
-                  "enchants": [],
-                  "bisItems": [],
-                  "gear": [],
-                  "rotation": [],
-                  "sources": [
-                    {
-                      "name": "Wowhead",
-                      "url": "URL da secao correspondente"
-                    }
-                  ]
-                }
-              }
-            },
-            "mythicPlus": {
-              "defaultBuildId": "build-id",
-              "builds": {}
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-Use `ptBR` e `enUS` nos textos exibidos em ambos os idiomas. Cada build pode
-ter suas proprias fontes e data de revisao. `defaultBuildId` indica a build
-apresentada inicialmente quando um conteudo tem mais de uma opcao. No addon,
-o botao Build alterna entre as builds cadastradas para o conteudo selecionado.
+Os textos podem ser armazenados em `ptBR` e `enUS`. Cada build pode ter uma
+opcao padrao; quando ha varias builds para o conteudo selecionado, o botao
+Build permite alternar entre elas.
 
 ## Mapeamento do guia Wowhead
 
@@ -121,12 +46,3 @@ Isso identifica o assunto de cada pagina, mas nao garante que um script consiga
 ler os dados dela. A coleta automatica depende de uma API ou de outro metodo de
 acesso autorizado pela fonte; o formato JSON e a estrutura local, nao um
 scraper do Wowhead.
-
-## Fontes e atualizacao
-
-O addon nao faz requisicoes HTTP aos sites. O conteudo precisa ser incluido
-como dados locais. Antes de automatizar a coleta de Wowhead, Icy Veins, Archon
-ou Murlok.io, confirme que a fonte fornece uma API ou outro meio autorizado
-para obter e reutilizar os dados. Nao contorne controles de acesso. Valores de
-popularidade devem sempre indicar sua fonte e contexto e nao devem ser
-misturados com recomendacoes editoriais sem deixar essa diferenca clara.
