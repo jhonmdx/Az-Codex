@@ -4,10 +4,13 @@ local mainFrame
 local bodyText
 local specText
 local urlBox
+local buildButton
 local contentButtons = {}
 local languageButtons = {}
 local sourceLabel
 local selectedContent = "raid"
+local selectedBuildID
+local selectedBuildContext
 local language = "ptBR"
 
 local text = {
@@ -15,20 +18,24 @@ local text = {
         package = "Pacote local v%s - atualizado em %s.",
         localData = "Os dados sao locais; o addon nao consulta o Wowhead pela internet.",
         noGuide = "Ainda nao ha guia cadastrado para esta especializacao.",
-        addGuide = "Adicione em Data.lua um registro para a chave classe:specID.",
         sourceHelp = "As fontes abaixo podem ser usadas para consultar os guias.",
         patch = "Patch: ",
         noProfile = "Ainda nao ha dados verificados para este modo de jogo.",
-        addProfile = "Preencha raid ou mythicPlus neste registro em Data.lua.",
         bis = "EQUIPAMENTO BIS",
-        unnamedItem = "Item sem nome",
         stats = "PRIORIDADE DE ATRIBUTOS",
         enchants = "ENCANTAMENTOS",
-        unnamedEnchant = "Encantamento sem nome",
         other = "OUTRAS RECOMENDACOES",
         source = "Fonte do guia: ",
         unknownSource = "Fonte nao informada",
         updated = "Dados atualizados em: ",
+        overview = "VISAO GERAL",
+        popularity = "POPULARIDADE",
+        sampleSize = "Tamanho da amostra: ",
+        talents = "TALENTOS",
+        gems = "GEMAS",
+        gear = "EQUIPAMENTO",
+        rotation = "ROTACAO",
+        build = "Build: ",
         unavailable = "Especializacao indisponivel",
         raid = "Raide",
         mythicPlus = "Mitico+",
@@ -40,20 +47,24 @@ local text = {
         package = "Local pack v%s - updated %s.",
         localData = "Data is stored locally; the addon does not fetch Wowhead online.",
         noGuide = "No guide is available for this specialization yet.",
-        addGuide = "Add a record in Data.lua using the class:specID key.",
         sourceHelp = "Use the sources below to look up guides.",
         patch = "Patch: ",
         noProfile = "No verified data is available for this content type yet.",
-        addProfile = "Fill in raid or mythicPlus in this Data.lua record.",
         bis = "BEST-IN-SLOT GEAR",
-        unnamedItem = "Unnamed item",
         stats = "STAT PRIORITY",
         enchants = "ENCHANTMENTS",
-        unnamedEnchant = "Unnamed enchantment",
         other = "OTHER RECOMMENDATIONS",
         source = "Guide source: ",
         unknownSource = "Source not specified",
         updated = "Data updated: ",
+        overview = "OVERVIEW",
+        popularity = "POPULARITY",
+        sampleSize = "Sample size: ",
+        talents = "TALENTS",
+        gems = "GEMS",
+        gear = "GEAR",
+        rotation = "ROTATION",
+        build = "Build: ",
         unavailable = "Specialization unavailable",
         raid = "Raid",
         mythicPlus = "Mythic+",
@@ -84,7 +95,46 @@ local function getSpecRecord(classFile, specID)
         return nil
     end
 
-    return data.specs[classFile .. ":" .. specID]
+    local classData = data.classes and data.classes[classFile]
+    if not classData or not classData.specializations then
+        return nil
+    end
+
+    return classData.specializations[tostring(specID)]
+end
+
+local function localized(value)
+    if type(value) ~= "table" then
+        return value
+    end
+
+    return value[language] or value.enUS or value.ptBR
+end
+
+local function appendList(lines, title, values)
+    if type(values) ~= "table" or #values == 0 then
+        return
+    end
+
+    table.insert(lines, title)
+    for _, value in ipairs(values) do
+        local line = value
+        if type(value) == "table" then
+            local slot = localized(value.slot)
+            local name = localized(value.name or value.value)
+            line = (slot and (slot .. ": ") or "") .. (name or "")
+            local note = localized(value.note)
+            if note then
+                line = line .. " (" .. note .. ")"
+            end
+        else
+            line = localized(value)
+        end
+        if line and line ~= "" then
+            table.insert(lines, "- " .. line)
+        end
+    end
+    table.insert(lines, "")
 end
 
 local function makeBodyText(record, profile)
@@ -96,71 +146,73 @@ local function makeBodyText(record, profile)
 
     if not record then
         table.insert(lines, t("noGuide"))
-        table.insert(lines, t("addGuide"))
         table.insert(lines, "")
         table.insert(lines, t("sourceHelp"))
         return table.concat(lines, "\n")
     end
 
-    if record.patch then
-        table.insert(lines, t("patch") .. record.patch)
+    local patch = data.gameVersion and data.gameVersion.patch
+    if patch and patch ~= "" then
+        table.insert(lines, t("patch") .. patch)
         table.insert(lines, "")
     end
 
     if not profile then
         table.insert(lines, t("noProfile"))
-        table.insert(lines, t("addProfile"))
         return table.concat(lines, "\n")
     end
 
-    if profile.summary then
-        table.insert(lines, profile.summary)
+    if profile.name then
+        table.insert(lines, t("build") .. (localized(profile.name) or ""))
         table.insert(lines, "")
     end
 
-    if profile.bisItems and #profile.bisItems > 0 then
-        table.insert(lines, t("bis"))
-        for _, item in ipairs(profile.bisItems) do
-            local itemText = item.slot and (item.slot .. ": ") or ""
-            itemText = itemText .. (item.name or t("unnamedItem"))
-            if item.note then
-                itemText = itemText .. " (" .. item.note .. ")"
+    if profile.overview then
+        table.insert(lines, t("overview"))
+        table.insert(lines, localized(profile.overview))
+        table.insert(lines, "")
+    end
+
+    if profile.popularity then
+        table.insert(lines, t("popularity"))
+        local description = localized(profile.popularity.summary or profile.popularity.description)
+        if description then
+            table.insert(lines, description)
+        end
+        if profile.popularity.sampleSize then
+            table.insert(lines, t("sampleSize") .. profile.popularity.sampleSize)
+        end
+        table.insert(lines, "")
+    end
+
+    if profile.talents then
+        table.insert(lines, t("talents"))
+        local importString = localized(profile.talents.importString)
+        local description = localized(profile.talents.description)
+        if importString then
+            table.insert(lines, importString)
+        end
+        if description then
+            table.insert(lines, description)
+        end
+        table.insert(lines, "")
+    end
+
+    appendList(lines, t("stats"), profile.stats)
+    appendList(lines, t("gems"), profile.gems)
+    appendList(lines, t("enchants"), profile.enchants)
+    appendList(lines, t("bis"), profile.bisItems)
+    appendList(lines, t("gear"), profile.gear)
+    appendList(lines, t("rotation"), profile.rotation)
+    appendList(lines, t("other"), profile.recommendations)
+
+    if profile.sources and #profile.sources > 0 then
+        local firstSource = profile.sources[1]
+        table.insert(lines, t("source") .. (firstSource.name or t("unknownSource")))
+        for _, source in ipairs(profile.sources) do
+            if source.url then
+                table.insert(lines, source.url)
             end
-            table.insert(lines, "- " .. itemText)
-        end
-        table.insert(lines, "")
-    end
-
-    if profile.stats and #profile.stats > 0 then
-        table.insert(lines, t("stats"))
-        for _, stat in ipairs(profile.stats) do
-            table.insert(lines, "- " .. stat)
-        end
-        table.insert(lines, "")
-    end
-
-    if profile.enchants and #profile.enchants > 0 then
-        table.insert(lines, t("enchants"))
-        for _, enchant in ipairs(profile.enchants) do
-            local enchantText = enchant.slot and (enchant.slot .. ": ") or ""
-            enchantText = enchantText .. (enchant.name or t("unnamedEnchant"))
-            table.insert(lines, "- " .. enchantText)
-        end
-        table.insert(lines, "")
-    end
-
-    if profile.recommendations and #profile.recommendations > 0 then
-        table.insert(lines, t("other"))
-        for _, recommendation in ipairs(profile.recommendations) do
-            table.insert(lines, "- " .. recommendation)
-        end
-        table.insert(lines, "")
-    end
-
-    if profile.sourceName or profile.sourceUrl then
-        table.insert(lines, t("source") .. (profile.sourceName or t("unknownSource")))
-        if profile.sourceUrl then
-            table.insert(lines, profile.sourceUrl)
         end
         table.insert(lines, "")
     end
@@ -182,11 +234,39 @@ local function updateContentButtons()
     end
 end
 
+local function getBuildIDs(content)
+    local buildIDs = {}
+    if content and type(content.builds) == "table" then
+        for buildID in pairs(content.builds) do
+            table.insert(buildIDs, buildID)
+        end
+        table.sort(buildIDs)
+    end
+    return buildIDs
+end
+
 local function refreshView()
     local classFile, specID, specName = getPlayerSpecialization()
     local _, className = UnitClass("player")
     local record = getSpecRecord(classFile, specID)
-    local profile = record and record[selectedContent]
+    local content = record and record.contents and record.contents[selectedContent]
+    local profile
+    local buildIDs = getBuildIDs(content)
+    local context = classFile and specID
+        and (classFile .. ":" .. specID .. ":" .. selectedContent)
+
+    if selectedBuildContext ~= context then
+        selectedBuildContext = context
+        selectedBuildID = nil
+    end
+
+    if content and content.builds and #buildIDs > 0 then
+        local defaultBuildID = content.defaultBuildId
+        if not selectedBuildID or not content.builds[selectedBuildID] then
+            selectedBuildID = content.builds[defaultBuildID] and defaultBuildID or buildIDs[1]
+        end
+        profile = content.builds[selectedBuildID]
+    end
 
     if specName and className then
         specText:SetText(className .. " - " .. specName)
@@ -197,6 +277,38 @@ local function refreshView()
     bodyText:SetText(makeBodyText(record, profile))
     local contentHeight = math.max(bodyText:GetStringHeight() + 12, 1)
     bodyText:GetParent():SetHeight(contentHeight)
+
+    if buildButton then
+        if profile then
+            local buildName = localized(profile.name) or selectedBuildID
+            buildButton:SetText(t("build") .. buildName)
+            buildButton:Show()
+            buildButton:SetEnabled(#buildIDs > 1)
+        else
+            buildButton:Hide()
+        end
+    end
+end
+
+local function cycleBuild()
+    local classFile, specID = getPlayerSpecialization()
+    local record = getSpecRecord(classFile, specID)
+    local content = record and record.contents and record.contents[selectedContent]
+    local buildIDs = getBuildIDs(content)
+    if #buildIDs < 2 then
+        return
+    end
+
+    for index, buildID in ipairs(buildIDs) do
+        if buildID == selectedBuildID then
+            selectedBuildID = buildIDs[(index % #buildIDs) + 1]
+            refreshView()
+            return
+        end
+    end
+
+    selectedBuildID = buildIDs[1]
+    refreshView()
 end
 
 local function createContentButtons()
@@ -291,11 +403,17 @@ local function createMainFrame()
 
     local title = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("TOPLEFT", mainFrame, "TOPLEFT", 20, -18)
-    title:SetText("Raid Intel")
+    title:SetText("Az Codex")
 
     local closeButton = CreateFrame("Button", nil, mainFrame, "UIPanelCloseButton")
     closeButton:SetPoint("TOPRIGHT", mainFrame, "TOPRIGHT", -4, -4)
     createLanguageButtons()
+
+    buildButton = CreateFrame("Button", nil, mainFrame, "UIPanelButtonTemplate")
+    buildButton:SetSize(180, 24)
+    buildButton:SetPoint("TOPLEFT", mainFrame, "TOPLEFT", 296, -70)
+    buildButton:SetScript("OnClick", cycleBuild)
+    buildButton:Hide()
 
     specText = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     specText:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -12)

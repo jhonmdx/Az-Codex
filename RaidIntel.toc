@@ -1,7 +1,7 @@
 ## Interface: 120000
-## Title: Raid Intel
+## Title: Az Codex
 ## Notes: Exibe dados locais de guias e fontes de World of Warcraft.
-## Author: Raid Intel
+## Author: Az Codex
 ## Version: 0.1.0
 ## SavedVariables: RaidIntelDB
 Data.lua

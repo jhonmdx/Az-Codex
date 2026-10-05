@@ -1,27 +1,8 @@
 {
-  "schemaVersion": 1,
-  "guides": {
-    "MAGE:62": {
-      "patch": "",
-      "season": "",
-      "raid": {
-        "sourceName": "Wowhead",
-        "sourceUrl": "https://www.wowhead.com/guides/classes/mage",
-        "updatedAt": "",
-        "bisItems": [],
-        "stats": [],
-        "enchants": [],
-        "recommendations": []
-      },
-      "mythicPlus": {
-        "sourceName": "Wowhead",
-        "sourceUrl": "https://www.wowhead.com/guides/classes/mage",
-        "updatedAt": "",
-        "bisItems": [],
-        "stats": [],
-        "enchants": [],
-        "recommendations": []
-      }
-    }
-  }
+  "schemaVersion": 2,
+  "gameVersion": {
+    "patch": "",
+    "season": null
+  },
+  "classes": {}
 }

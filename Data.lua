@@ -19,31 +19,37 @@ RaidIntelData = {
             url = "https://murlok.io/",
         },
     },
-    specs = {
-        -- Cadastre aqui dados verificados para cada classe e especializacao.
-        -- Use itens e recomendacoes do patch atual; nao preencha com dados inventados.
-        -- ["MAGE:62"] = {
-        --     patch = "patch do jogo",
-        --     raid = {
-        --         updatedAt = "AAAA-MM-DD",
-        --         sourceName = "Wowhead",
-        --         sourceUrl = "https://www.wowhead.com/guides",
-        --         bisItems = {
-        --             { slot = "Cabeca", name = "Nome verificado do item" },
-        --         },
-        --         stats = { "Prioridade de atributos verificada" },
-        --         enchants = {
-        --             { slot = "Arma", name = "Nome verificado do encantamento" },
-        --         },
-        --     },
-        --     mythicPlus = {
-        --         updatedAt = "AAAA-MM-DD",
-        --         sourceName = "Wowhead",
-        --         sourceUrl = "https://www.wowhead.com/guides",
-        --         bisItems = {},
-        --         stats = {},
-        --         enchants = {},
-        --     },
-        -- },
-    },
+    classes = {},
+    -- Runtime data is indexed by the UnitClass class token, then spec ID:
+    -- classes = {
+    --     DEMONHUNTER = {
+    --         classId = 12,
+    --         specializations = {
+    --             ["SPEC_ID"] = {
+    --                 specId = "SPEC_ID",
+    --                 role = "DAMAGER",
+    --                 contents = {
+    --                     raid = {
+    --                         defaultBuildId = "build-id",
+    --                         builds = {
+    --                             ["build-id"] = {
+    --                                 name = { ptBR = "Nome", enUS = "Name" },
+    --                                 overview = { ptBR = "Resumo", enUS = "Overview" },
+    --                                 popularity = { summary = { ptBR = "Dados", enUS = "Data" } },
+    --                                 talents = { importString = { ptBR = "Codigo", enUS = "Code" } },
+    --                                 stats = {},
+    --                                 gems = {},
+    --                                 enchants = {},
+    --                                 rotation = {},
+    --                                 bisItems = {},
+    --                                 gear = {},
+    --                                 sources = {},
+    --                             },
+    --                         },
+    --                     },
+    --                 },
+    --             },
+    --         },
+    --     },
+    -- },
 }
